@@ -75,8 +75,55 @@ SELECT * FROM personal.empleados WHERE (comision_emp <= (sal_emp*0.30));
 
 # 17. Hallar los empleados cuyo nombre no contiene la cadena “MA”
 
-SELECT * FROM personal.empleados WHERE nombre <> '%Ma%';
+SELECT * FROM personal.empleados WHERE nombre NOT LIKE '%Ma%';
 
-# 18. 18. Obtener los nombres de los departamentos que sean “Ventas” ni “Investigación” ni ‘Mantenimiento.  
+# 18. Obtener los nombres de los departamentos que no sean “Ventas” ni “Investigación” ni "Mantenimiento".  
+
+SELECT nombre_depto FROM personal.departamentos WHERE nombre_depto <> 'Ventas' AND nombre_depto 
+<> 'Investigación' AND nombre_depto <> 'Mantenimiento'; 
+
+# 19. Ahora obtener los nombres de los departamentos que sean “Ventas”, “Investigación” y "Mantenimiento". 
+
+SELECT nombre_depto FROM personal.departamentos WHERE nombre_depto = 'Ventas' OR nombre_depto = 'Investigación' 
+OR nombre_depto = 'Mantenimiento' GROUP BY nombre_depto; 
+
+# 20. Mostrar el salario más alto de la empresa.  
+
+SELECT MAX(sal_emp) AS salario_mas_alto FROM personal.empleados;
+
+# 21. Mostrar el nombre del último empleado de la lista por orden alfabético.
+
+SELECT nombre FROM personal.empleados ORDER BY nombre DESC;
+
+# 22. Hallar el salario más alto, el más bajo y la diferencia entre ellos. 
+
+SELECT MAX(sal_emp) AS salario_mas_alto, MIN(sal_emp) AS salario_mas_bajo, 
+(MAX(sal_emp) - MIN(sal_emp)) AS resta_de_salarios FROM personal.empleados;
+
+# 23. Hallar el salario promedio por departamento.
+
+SELECT id_depto, AVG(sal_emp) AS promedio_salario FROM personal.empleados GROUP BY id_depto;
+
+# 24. Hallar los departamentos que tienen más de tres empleados. Mostrar el número de empleados 
+# de esos departamentos.  
+
+SELECT id_depto, COUNT(id_emp) AS cantidad_de_empleados FROM personal.empleados GROUP BY id_depto;
+
+# 25. Mostrar el código y nombre de cada jefe, junto al número de empleados que dirige. Solo los que 
+# tengan más de dos empleados (2 incluido).  
+
+SELECT * from personal.empleados;
+SELECT * FROM personal.departamentos;
+
+# 26. Hallar los departamentos que no tienen empleados  
+
+
+
+# Consulta con Subconsulta 
+# 27. Mostrar la lista de los empleados cuyo salario es mayor o igual que el promedio de la empresa. 
+# Ordenarlo por departamento.  
+
+SELECT id_depto, (SUM(sal_emp) / COUNT(id_emp)) AS promedio FROM personal.empleados WHERE sal_emp >= 
+(SUM(sal_emp) / COUNT(id_emp)) ORDER BY id_depto ASC;
 
 
