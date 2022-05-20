@@ -5,7 +5,7 @@
 
 # 1. Obtener los datos completos de los empleados. 
 
-SELECT * FROM empleados;
+SELECT * FROM personal.empleados;
 
 # 2. Obtener los datos completos de los departamentos. 
 
@@ -48,9 +48,35 @@ SELECT sal_emp, comision_emp FROM personal.empleados WHERE id_depto = 2000 ORDER
 # 11. Obtener el valor total a pagar que resulta de sumar el salario y la comisión de los empleados 
 # del departamento 3000 una bonificación de 500, en orden alfabético del empleado. 
 
+SELECT nombre, id_depto, (sal_emp + comision_emp + 500) AS total_a_pagar FROM personal.empleados WHERE id_depto = 3000 ORDER BY nombre ASC;
 
+# 12. Muestra los empleados cuyo nombre empiece con la letra J.
 
+SELECT * FROM personal.empleados WHERE nombre LIKE 'J%';
 
+# 13. Listar el salario, la comisión, el salario total (salario + comisión) y nombre, de aquellos empleados que 
+# tienen comisión superior a 1000.  
 
+SELECT sal_emp, comision_emp, (sal_emp + comision_emp) AS salario_total, nombre FROM personal.empleados 
+WHERE comision_emp > 1000;
+
+# 14. Obtener un listado similar al anterior, pero de aquellos empleados que NO tienen comisión.
+
+SELECT sal_emp, comision_emp, (sal_emp + comision_emp) AS salario_total, nombre FROM personal.empleados
+WHERE comision_emp = 0;
+
+# 15. Obtener la lista de los empleados que ganan una comisión superior a su sueldo.
+
+SELECT * FROM personal.empleados WHERE (comision_emp > sal_emp);
+
+# 16. Listar los empleados cuya comisión es menor o igual que el 30% de su sueldo.
+
+SELECT * FROM personal.empleados WHERE (comision_emp <= (sal_emp*0.30));
+
+# 17. Hallar los empleados cuyo nombre no contiene la cadena “MA”
+
+SELECT * FROM personal.empleados WHERE nombre <> '%Ma%';
+
+# 18. 18. Obtener los nombres de los departamentos que sean “Ventas” ni “Investigación” ni ‘Mantenimiento.  
 
 
