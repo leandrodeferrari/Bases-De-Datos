@@ -112,18 +112,17 @@ SELECT id_depto, COUNT(id_emp) AS cantidad_de_empleados FROM personal.empleados 
 # 25. Mostrar el código y nombre de cada jefe, junto al número de empleados que dirige. Solo los que 
 # tengan más de dos empleados (2 incluido).  
 
-SELECT cod_jefe, COUNT(cod_jefe) AS cantidad_de_empleados FROM personal.empleados GROUP BY cod_jefe HAVING count(cod_jefe) >= 2; 
+SELECT cod_jefe, COUNT(id_emp) AS cantidad_de_empleados FROM personal.empleados GROUP BY cod_jefe HAVING 
+COUNT(cod_jefe) >= 2; 
 
 # 26. Hallar los departamentos que no tienen empleados  
 
-SELECT nombre_depto FROM personal.departamentos INNER JOIN personal.empleados ON 
-NOT (personal.departamentos.id_depto = personal.empleados.id_depto);
+SELECT id_depto, nombre_depto FROM personal.departamentos WHERE 
+personal.departamentos.id_depto NOT IN (SELECT id_depto FROM personal.empleados);
 
 # Consulta con Subconsulta 
 # 27. Mostrar la lista de los empleados cuyo salario es mayor o igual que el promedio de la empresa. 
 # Ordenarlo por departamento.  
 
-SELECT * FROM personal.empleados WHERE sal_emp >= (SELECT ROUND(SUM(sal_emp) / COUNT(id_emp),2) 
-FROM personal.empleados) ORDER BY id_depto;
-
-SELECT ROUND(SUM(sal_emp) / COUNT(id_emp),2) AS promedio_empresa FROM personal.empleados;
+SELECT * FROM personal.empleados WHERE sal_emp >= (SELECT ROUND(AVG(sal_emp),2) 
+FROM personal.empleados) ORDER BY id_depto ASC;
