@@ -107,7 +107,7 @@ SELECT id_depto, AVG(sal_emp) AS promedio_salario FROM personal.empleados GROUP 
 # 24. Hallar los departamentos que tienen más de tres empleados. Mostrar el número de empleados 
 # de esos departamentos.  
 
-SELECT id_depto, COUNT(id_emp) AS cantidad_de_empleados FROM personal.empleados GROUP BY id_depto;
+SELECT id_depto, COUNT(id_emp) AS cantidad_de_empleados FROM personal.empleados GROUP BY id_depto  HAVING COUNT(id_emp) > 3;
 
 # 25. Mostrar el código y nombre de cada jefe, junto al número de empleados que dirige. Solo los que 
 # tengan más de dos empleados (2 incluido).  
