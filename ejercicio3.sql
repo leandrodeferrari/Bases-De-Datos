@@ -113,9 +113,11 @@ SELECT * FROM tienda.fabricante LEFT JOIN tienda.producto ON fabricante.codigo =
 
 # 24. Devuelve un listado donde sólo aparezcan aquellos fabricantes que no tienen ningún producto asociado.
 
-# SELECT * FROM tienda.fabricante WHERE codigo NOT IN (SELECT producto.codigo_fabricante FROM tienda.producto);
-SELECT * FROM tienda.fabricante LEFT JOIN tienda.producto ON fabricante.codigo = producto.codigo_fabricante;
-####
+# SELECT * FROM tienda.fabricante WHERE codigo NOT IN (SELECT producto.codigo_fabricante FROM tienda.producto).
+
+SELECT * FROM tienda.fabricante LEFT JOIN tienda.producto ON fabricante.codigo = producto.codigo_fabricante 
+WHERE producto.codigo_fabricante IS NULL;
+
 # Subconsultas (En la cláusula WHERE).
 # Con operadores básicos de comparación.
 # 25. Devuelve todos los productos del fabricante Lenovo. (Sin utilizar INNER JOIN).
@@ -140,8 +142,10 @@ SELECT producto.nombre FROM tienda.producto WHERE precio =
 # sus productos.
 
 SELECT * FROM tienda.producto WHERE codigo_fabricante = 
-(SELECT fabricante.codigo FROM tienda.fabricante WHERE fabricante.nombre = 'Asus');
-#####
+(SELECT fabricante.codigo FROM tienda.fabricante WHERE fabricante.nombre = 'Asus') AND precio > 
+(SELECT AVG(precio) FROM tienda.producto WHERE codigo_fabricante = 
+(SELECT fabricante.codigo FROM tienda.fabricante WHERE fabricante.nombre = 'Asus'));
+
 # Subconsultas con IN y NOT IN.
 # 29. Devuelve los nombres de los fabricantes que tienen productos asociados.  (Utilizando IN o NOT IN).
 
