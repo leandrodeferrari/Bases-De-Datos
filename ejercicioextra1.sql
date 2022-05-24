@@ -48,8 +48,8 @@ SELECT Nombre_equipo, COUNT(Nombre_equipo) AS numero_de_jugadores FROM nba.jugad
 
 # 12. Mostrar el jugador que más puntos ha realizado en toda su carrera. 
 
-SELECT jugador, MAX(Puntos_por_partido) AS total_puntos FROM nba.estadisticas GROUP BY jugador HAVING Puntos_por_partido = 
-(SELECT SUM(Puntos_por_partido) FROM nba.estadisticas GROUP BY jugador);
+SELECT jugador, MAX(Puntos_por_partido) AS total_puntos FROM nba.estadisticas GROUP BY jugador 
+HAVING Puntos_por_partido = (SELECT SUM(Puntos_por_partido) FROM nba.estadisticas GROUP BY jugador);
 
 #####
 # 13. Mostrar el nombre del equipo, conferencia y división del jugador más alto de la NBA. 
