@@ -35,6 +35,7 @@ SELECT Puntos_por_partido FROM nba.estadisticas WHERE jugador =
 
 # 9. Mostrar los puntos por partido del jugador ‘Pau Gasol’ en la temporada ’04/05′.  
 
+
 SELECT Puntos_por_partido FROM nba.estadisticas WHERE jugador = 
 (SELECT codigo FROM nba.jugadores WHERE Nombre = 'Pau Gasol') AND temporada = '04/05';
 
@@ -48,10 +49,9 @@ SELECT Nombre_equipo, COUNT(Nombre_equipo) AS numero_de_jugadores FROM nba.jugad
 
 # 12. Mostrar el jugador que más puntos ha realizado en toda su carrera. 
 
-SELECT jugador, MAX(Puntos_por_partido) AS total_puntos FROM nba.estadisticas GROUP BY jugador 
-HAVING Puntos_por_partido = (SELECT SUM(Puntos_por_partido) FROM nba.estadisticas GROUP BY jugador);
-
-#####
+SELECT jugador, SUM(Puntos_por_partido) AS total_puntos FROM nba.estadisticas 
+GROUP BY jugador ORDER BY Puntos_por_partido DESC LIMIT 1;
+### No se como hacerlo, usando la función MAX().
 # 13. Mostrar el nombre del equipo, conferencia y división del jugador más alto de la NBA. 
 
 SELECT Nombre, Conferencia, Division FROM nba.equipos WHERE Nombre = 
@@ -59,28 +59,27 @@ SELECT Nombre, Conferencia, Division FROM nba.equipos WHERE Nombre =
 (SELECT MAX(altura) FROM nba.jugadores));
 
 # 14. Mostrar la media de puntos en partidos de los equipos de la división Pacific. 
-                                     
-SELECT Puntos_por_partido FROM nba.estadisticas WHERE jugador IN 
+
+# Solución con subconsulta
+SELECT ROUND(AVG(Puntos_por_partido),2) AS promedio FROM nba.estadisticas WHERE jugador IN 
 (SELECT codigo FROM nba.jugadores WHERE Nombre_equipo IN 
 (SELECT nombre FROM nba.equipos WHERE Division = 'Pacific'));
-# Falta AVG()
-SELECT Puntos_por_partido FROM nba.estadisticas INNER JOIN nba.jugadores ON estadisticas.jugador = jugadores.codigo 
+
+# Solución con join
+SELECT ROUND(AVG(Puntos_por_partido),2) AS promedio FROM nba.estadisticas 
+INNER JOIN nba.jugadores ON estadisticas.jugador = jugadores.codigo 
 WHERE Nombre_equipo IN (SELECT nombre FROM nba.equipos WHERE Division = 'Pacific');
-# FALTA AVG()
-####
+
 # 15. Mostrar el partido o partidos (equipo_local, equipo_visitante y diferencia) con mayor diferencia de puntos. 
 
-SELECT codigo, equipo_local, equipo_visitante, (puntos_local - puntos_visitante) AS diferencia FROM nba.partidos;
-# Falta lo de mayor diferencia
+SELECT equipo_local, equipo_visitante, MAX(puntos_local - puntos_visitante) AS diferencia FROM nba.partidos;
+
+# 16. Mostrar los puntos de cada equipo en los partidos, tanto de local como de visitante.  
+
+SELECT equipo_local, equipo_visitante FROM nba.partidos GROUP BY equipo_local, equipo_visitante;
 ####
-# 16. Mostrar la media de puntos en partidos de los equipos de la división Pacific. 
-
-
-
-# 17. Mostrar los puntos de cada equipo en los partidos, tanto de local como de visitante.  
-
-
-
-# 18. Mostrar quien gana en cada partido (codigo, equipo_local, equipo_visitante, equipo_ganador), 
+# 17. Mostrar quien gana en cada partido (codigo, equipo_local, equipo_visitante, equipo_ganador), 
 # en caso de empate sera null. 
 
+# SELECT codigo, equipo_local, equipo_visitante, AS equipo_ganador FROM nba.partidos
+###
