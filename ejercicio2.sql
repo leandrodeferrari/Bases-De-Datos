@@ -115,7 +115,7 @@ SELECT id_depto, COUNT(id_emp) AS cantidad_de_empleados FROM personal.empleados 
 SELECT cod_jefe, COUNT(id_emp) AS cantidad_de_empleados FROM personal.empleados GROUP BY cod_jefe HAVING 
 COUNT(cod_jefe) >= 2; 
 
-# 26. Hallar los departamentos que no tienen empleados  
+# 26. Hallar los departamentos que no tienen empleados.
 
 SELECT id_depto, nombre_depto FROM personal.departamentos WHERE 
 personal.departamentos.id_depto NOT IN (SELECT id_depto FROM personal.empleados);
