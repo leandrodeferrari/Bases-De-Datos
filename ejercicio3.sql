@@ -163,4 +163,5 @@ SELECT fabricante.nombre FROM tienda.fabricante WHERE codigo NOT IN
 
 SELECT fabricante.nombre FROM tienda.fabricante WHERE fabricante.codigo IN 
 (SELECT producto.codigo_fabricante FROM tienda.producto GROUP BY codigo_fabricante HAVING COUNT(codigo_fabricante) = 
-(SELECT fabricante.codigo FROM tienda.fabricante WHERE fabricante.nombre = 'Lenovo'));
+(SELECT COUNT(producto.codigo_fabricante) FROM tienda.producto GROUP BY producto.codigo_fabricante HAVING producto.codigo_fabricante = 
+(SELECT fabricante.codigo FROM tienda.fabricante WHERE fabricante.nombre = 'Lenovo') AND fabricante.nombre <> 'Lenovo'));
