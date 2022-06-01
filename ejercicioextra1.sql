@@ -48,14 +48,8 @@ SELECT Nombre_equipo, COUNT(Nombre_equipo) AS numero_de_jugadores FROM nba.jugad
 
 # 12. Mostrar el jugador que más puntos ha realizado en toda su carrera. 
 
-SELECT jugador, ROUND(SUM(Puntos_por_partido),2) AS total_puntos FROM nba.estadisticas 
-GROUP BY jugador ORDER BY total_puntos DESC LIMIT 1;
-
-/*
-SELECT jugador, MAX(suma) AS maximo FROM 
-(SELECT jugador, SUM(Puntos_por_partido) AS suma FROM nba.estadisticas GROUP BY jugador) AS sm;
-Pude implementar el MAX() pero me queda mal el jugador.
-*/
+SELECT jugador, MAX(suma) AS maximo_puntos FROM 
+(SELECT jugador, ROUND(SUM(Puntos_por_partido),2) AS suma FROM nba.estadisticas GROUP BY jugador ORDER BY suma DESC) AS subestadistica;
 
 # 13. Mostrar el nombre del equipo, conferencia y división del jugador más alto de la NBA. 
 
@@ -80,10 +74,18 @@ WHERE Nombre_equipo IN (SELECT nombre FROM nba.equipos WHERE Division = 'Pacific
 SELECT equipo_local, equipo_visitante, MAX(puntos_local - puntos_visitante) AS diferencia FROM nba.partidos;
 
 # 16. Mostrar los puntos de cada equipo en los partidos, tanto de local como de visitante.  
-
-
+SELECT equipo, SUM(puntos) AS puntos_total FROM (
+SELECT equipo_local AS equipo, SUM(puntos_local) AS puntos FROM nba.partidos GROUP BY equipo_local
+UNION
+SELECT equipo_visitante AS equipo, SUM(puntos_visitante) AS puntos FROM nba.partidos GROUP BY equipo_visitante) AS subpartidos GROUP BY equipo;
 
 # 17. Mostrar quien gana en cada partido (codigo, equipo_local, equipo_visitante, equipo_ganador), 
 # en caso de empate sera null. 
 
-
+SELECT codigo, equipo_local, equipo_visitante, 
+CASE 
+	WHEN puntos_local>puntos_visitante THEN equipo_local
+    WHEN puntos_local<puntos_visitante THEN equipo_visitante
+    ELSE NULL
+    END AS equipo_ganador FROM nba.partidos;
+    
