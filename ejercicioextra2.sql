@@ -61,7 +61,7 @@ WHERE fecha_entrega > fecha_esperada OR fecha_entrega IS NULL;
 # b) Utilizando la función DATEDIFF de MySQL. 
 
 SELECT codigo_pedido, codigo_cliente, fecha_esperada, fecha_entrega FROM jardineria.pedido 
-WHERE adddate(fecha_entrega, interval 2 day);
+WHERE fecha_entrega < ADDDATE(fecha_esperada, INTERVAL 2 DAY);
 
 ### 
 # 11. Devuelve un listado de todos los pedidos que fueron rechazados en 2009.  
@@ -101,37 +101,55 @@ INNER JOIN jardineria.empleado ON cliente.codigo_empleado_rep_ventas = empleado.
 
 # 18. Muestra el nombre de los clientes que hayan realizado pagos junto con el nombre de sus representantes de ventas.  
 
-SELECT nombre_cliente, nombre FROM jardineria.cliente INNER JOIN jardineria.empleado 
-INNER JOIN jardineria.pago ON cliente.codigo_cliente = pago.codigo_cliente AND cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado;
+SELECT cliente.nombre_cliente, empleado.nombre 
+FROM jardineria.cliente INNER JOIN jardineria.empleado ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado
+WHERE cliente.codigo_cliente IN 
+(SELECT DISTINCT cliente.codigo_cliente FROM jardineria.pago INNER JOIN jardineria.cliente ON cliente.codigo_cliente = pago.codigo_cliente);
 
-###
 # 19. Muestra el nombre de los clientes que no hayan realizado pagos junto con el nombre de sus representantes de ventas.  
 
-
+SELECT cliente.nombre_cliente, empleado.nombre 
+FROM jardineria.cliente INNER JOIN jardineria.empleado ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado
+WHERE cliente.codigo_cliente IN 
+(SELECT DISTINCT cliente.codigo_cliente FROM jardineria.pago WHERE cliente.codigo_cliente NOT IN 
+(SELECT DISTINCT codigo_cliente FROM jardineria.pago));
 
 # 20. Devuelve el nombre de los clientes que han hecho pagos y el nombre de sus representantes junto con la ciudad de la 
 # oficina a la que pertenece el representante.  
 
-
+SELECT DISTINCT nombre_cliente, empleado.nombre AS nombre_representabte, oficina.ciudad AS ciudad_representante FROM jardineria.cliente 
+INNER JOIN jardineria.pago ON cliente.codigo_cliente = pago.codigo_cliente 
+INNER JOIN jardineria.empleado ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado
+INNER JOIN jardineria.oficina ON empleado.codigo_oficina = oficina.codigo_oficina;
 
 # 21. Devuelve el nombre de los clientes que no hayan hecho pagos y el nombre de sus representantes junto con la ciudad 
 # de la oficina a la que pertenece el representante.
 
+SELECT nombre_cliente, empleado.nombre AS nombre_representante, oficina.ciudad AS ciudad_representante FROM jardineria.cliente  
+INNER JOIN jardineria.empleado ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado
+INNER JOIN jardineria.oficina ON empleado.codigo_oficina = oficina.codigo_oficina
+WHERE cliente.codigo_cliente NOT IN (SELECT pago.codigo_cliente FROM jardineria.pago);
 
-  
 # 22. Lista la dirección de las oficinas que tengan clientes en Fuenlabrada. 
 
-
+SELECT oficina.linea_direccion1, oficina.linea_direccion2 FROM jardineria.cliente  
+INNER JOIN jardineria.empleado ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado
+INNER JOIN jardineria.oficina ON empleado.codigo_oficina = oficina.codigo_oficina
+WHERE cliente.codigo_cliente IN (SELECT codigo_cliente FROM jardineria.cliente WHERE ciudad = 'Fuenlabrada');
 
 # 23. Devuelve el nombre de los clientes y el nombre de sus representantes junto con la ciudad de la oficina 
 # a la que pertenece el representante.  
 
-
+SELECT cliente.nombre_cliente, empleado.nombre AS nombre_representante, oficina.ciudad FROM jardineria.cliente
+INNER JOIN jardineria.empleado ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado
+INNER JOIN jardineria.oficina ON empleado.codigo_oficina = oficina.codigo_oficina;
 
 # 24. Devuelve un listado con el nombre de los empleados junto con el nombre de sus jefes.  
 
+SELECT empleado.nombre, empleado.nombre AS nombre_jefe FROM jardineria.empleado
+INNER JOIN jardineria.empleado ON codigo_empleado = codigo_jefe;
 
-
+###
 # 25. Devuelve el nombre de los clientes a los que no se les ha entregado a tiempo un pedido.  
 
 
