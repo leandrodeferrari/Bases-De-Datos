@@ -60,10 +60,14 @@ WHERE fecha_entrega > fecha_esperada OR fecha_entrega IS NULL;
 # a) Utilizando la función ADDDATE de MySQL. 
 # b) Utilizando la función DATEDIFF de MySQL. 
 
+# a)
 SELECT codigo_pedido, codigo_cliente, fecha_esperada, fecha_entrega FROM jardineria.pedido 
-WHERE fecha_entrega < ADDDATE(fecha_esperada, INTERVAL 2 DAY);
+WHERE fecha_entrega <= ADDDATE(fecha_esperada, INTERVAL -2 DAY);
 
-### 
+# b) 
+SELECT codigo_pedido, codigo_cliente, fecha_esperada, fecha_entrega FROM jardineria.pedido
+WHERE DATEDIFF(fecha_esperada, fecha_entrega) >= 2;
+
 # 11. Devuelve un listado de todos los pedidos que fueron rechazados en 2009.  
 
 SELECT * FROM jardineria.pedido WHERE estado = 'Rechazado' AND YEAR(fecha_pedido) = 2009;
@@ -146,17 +150,20 @@ INNER JOIN jardineria.oficina ON empleado.codigo_oficina = oficina.codigo_oficin
 
 # 24. Devuelve un listado con el nombre de los empleados junto con el nombre de sus jefes.  
 
-SELECT empleado.nombre, empleado.nombre AS nombre_jefe FROM jardineria.empleado
-INNER JOIN jardineria.empleado ON codigo_empleado = codigo_jefe;
+SELECT empleado.nombre, jefe.nombre_jefe FROM jardineria.empleado
+INNER JOIN (SELECT empleado.codigo_empleado AS codigo_jefe, empleado.nombre AS nombre_jefe FROM jardineria.empleado) AS jefe
+ON empleado.codigo_jefe = jefe.codigo_jefe;
 
-###
 # 25. Devuelve el nombre de los clientes a los que no se les ha entregado a tiempo un pedido.  
 
-
+SELECT DISTINCT cliente.nombre_cliente FROM jardineria.cliente INNER JOIN jardineria.pedido 
+ON cliente.codigo_cliente = pedido.codigo_cliente WHERE fecha_entrega > fecha_esperada;
 
 # 26. Devuelve un listado de las diferentes gamas de producto que ha comprado cada cliente. 
 
-
+SELECT DISTINCTROW producto.gama, pedido.codigo_cliente FROM jardineria.producto 
+INNER JOIN jardineria.detalle_pedido ON producto.codigo_producto = detalle_pedido.codigo_producto 
+INNER JOIN jardineria.pedido ON detalle_pedido.codigo_pedido = pedido.codigo_pedido;
 
 # Consultas multitabla (Composición externa)  
 # Resuelva todas las consultas utilizando las cláusulas LEFT JOIN, RIGHT JOIN, JOIN. 
