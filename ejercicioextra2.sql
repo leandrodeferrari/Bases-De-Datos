@@ -169,123 +169,153 @@ INNER JOIN jardineria.pedido ON detalle_pedido.codigo_pedido = pedido.codigo_ped
 # Resuelva todas las consultas utilizando las cláusulas LEFT JOIN, RIGHT JOIN, JOIN. 
 # 27. Devuelve un listado que muestre solamente los clientes que no han realizado ningún pago.  
 
-
+SELECT cliente.* FROM jardineria.cliente LEFT JOIN jardineria.pago 
+ON cliente.codigo_cliente = pago.codigo_cliente WHERE pago.codigo_cliente IS NULL;
 
 # 28. Devuelve un listado que muestre solamente los clientes que no han realizado ningún pedido.  
 
-
+SELECT cliente.* FROM jardineria.cliente LEFT JOIN jardineria.pedido 
+ON cliente.codigo_cliente = pedido.codigo_cliente WHERE pedido.codigo_cliente IS NULL;
 
 # 29. Devuelve un listado que muestre los clientes que no han realizado ningún pago y los que no han realizado ningún pedido.  
 
-
+SELECT cliente.* FROM jardineria.cliente LEFT JOIN jardineria.pedido 
+ON cliente.codigo_cliente = pedido.codigo_cliente
+LEFT JOIN jardineria.pago ON cliente.codigo_cliente = pago.codigo_cliente WHERE pedido.codigo_cliente IS NULL AND pago.codigo_cliente IS NULL;
 
 # 30. Devuelve un listado que muestre solamente los empleados que no tienen una oficina asociada.  
 
-
+SELECT empleado.* FROM jardineria.empleado LEFT JOIN jardineria.oficina 
+ON empleado.codigo_oficina = oficina.codigo_oficina WHERE oficina.codigo_oficina IS NULL;
 
 # 31. Devuelve un listado que muestre solamente los empleados que no tienen un cliente asociado.  
 
-
+SELECT empleado.* FROM jardineria.empleado LEFT JOIN jardineria.cliente 
+ON empleado.codigo_empleado = cliente.codigo_empleado_rep_ventas WHERE cliente.codigo_empleado_rep_ventas IS NULL; 
 
 # 32. Devuelve un listado que muestre los empleados que no tienen una oficina asociada y los que no tienen un cliente asociado.  
 
-
+SELECT empleado.* FROM jardineria.empleado LEFT JOIN jardineria.oficina 
+ON empleado.codigo_oficina = oficina.codigo_oficina LEFT JOIN jardineria.cliente 
+ON empleado.codigo_empleado = cliente.codigo_empleado_rep_ventas 
+WHERE oficina.codigo_oficina IS NULL AND cliente.codigo_empleado_rep_ventas IS NULL;
 
 # 33. Devuelve un listado de los productos que nunca han aparecido en un pedido.  
 
-
+SELECT producto.* FROM jardineria.producto LEFT JOIN jardineria.detalle_pedido 
+ON producto.codigo_producto = detalle_pedido.codigo_producto 
+WHERE detalle_pedido.codigo_producto IS NULL;
 
 # 34. Devuelve las oficinas donde no trabajan ninguno de los empleados que hayan sido los representantes de ventas 
 # de algún cliente que haya realizado la compra de algún producto de la gama Frutales.  
 
-
+SELECT DISTINCTROW oficina.* FROM jardineria.oficina LEFT JOIN jardineria.empleado 
+ON oficina.codigo_oficina = empleado.codigo_oficina INNER JOIN jardineria.cliente 
+ON empleado.codigo_empleado = cliente.codigo_empleado_rep_ventas INNER JOIN jardineria.pedido 
+ON cliente.codigo_cliente = pedido.codigo_cliente INNER JOIN jardineria.detalle_pedido 
+ON pedido.codigo_pedido = detalle_pedido.codigo_pedido 
+WHERE detalle_pedido.codigo_producto IN (SELECT codigo_producto FROM jardineria.producto WHERE gama = 'frutales') 
+AND cliente.codigo_empleado_rep_ventas IS NULL;
 
 # 35. Devuelve un listado con los clientes que han realizado algún pedido, pero no han realizado ningún pago.  
 
-
+SELECT DISTINCTROW cliente.* FROM jardineria.cliente INNER JOIN jardineria.pedido 
+ON cliente.codigo_cliente = pedido.codigo_cliente LEFT JOIN jardineria.pago 
+ON cliente.codigo_cliente = pago.codigo_cliente WHERE pago.codigo_cliente IS NULL;
 
 # 36. Devuelve un listado con los datos de los empleados que no tienen clientes asociados y el nombre de su jefe asociado.  
 
-
+SELECT empleado.* FROM jardineria.empleado LEFT JOIN jardineria.cliente 
+ON empleado.codigo_empleado = cliente.codigo_empleado_rep_ventas 
+WHERE cliente.codigo_empleado_rep_ventas IS NULL AND codigo_jefe IS NULL;
 
 # Consultas resumen  
 # 37. ¿Cuántos empleados hay en la compañía?  
 
-
+SELECT COUNT(codigo_empleado) AS cantidad_empleados FROM jardineria.empleado;
 
 # 38. ¿Cuántos clientes tiene cada país?  
 
-
+SELECT pais, COUNT(codigo_cliente) AS cantidad_clientes FROM jardineria.cliente GROUP BY pais;
 
 # 39. ¿Cuál fue el pago medio en 2009?  
 
-
+SELECT AVG(total) AS promedio_pago FROM jardineria.pago WHERE fecha_pago LIKE '%2009%';
 
 # 40. ¿Cuántos pedidos hay en cada estado? Ordena el resultado de forma descendente por el número de pedidos.  
 
-
+SELECT estado, COUNT(codigo_pedido) AS numero_de_pedidos FROM jardineria.pedido GROUP BY estado ORDER BY numero_de_pedidos DESC;
 
 # 41. Calcula el precio de venta del producto más caro y más barato en una misma consulta.  
 
-
+SELECT MIN(precio_venta) AS precio_minimo, MAX(precio_venta) AS precio_maximo FROM jardineria.producto;
 
 # 42. Calcula el número de clientes que tiene la empresa.  
 
-
+SELECT COUNT(codigo_cliente) AS cantidad_clientes FROM jardineria.cliente;
 
 # 43. ¿Cuántos clientes tiene la ciudad de Madrid?  
 
-
+SELECT COUNT(codigo_cliente) AS cantidad_clientes_de_madrid FROM jardineria.cliente WHERE ciudad = 'Madrid';
 
 # 44. ¿Calcula cuántos clientes tiene cada una de las ciudades que empiezan por M?  
 
-
+SELECT COUNT(codigo_cliente) AS cantidad_clientes_de_ciudades_con_c FROM jardineria.cliente WHERE ciudad LIKE 'M%';
 
 # 45. Devuelve el nombre de los representantes de ventas y el número de clientes al que atiende cada uno.  
 
-
+SELECT empleado.nombre AS nombre_representante, COUNT(codigo_cliente) AS cantidad_clientes FROM jardineria.empleado INNER JOIN jardineria.cliente 
+ON empleado.codigo_empleado = cliente.codigo_empleado_rep_ventas GROUP BY nombre_representante;
 
 # 46. Calcula el número de clientes que no tiene asignado representante de ventas.  
 
-
+SELECT COUNT(codigo_cliente) cantidad_clientes_sin_representante FROM jardineria.cliente WHERE codigo_empleado_rep_ventas IS NULL;
 
 # 47. Calcula la fecha del primer y último pago realizado por cada uno de los clientes. El listado deberá mostrar el 
 # nombre y los apellidos de cada cliente.  
 
-
+SELECT cliente.nombre_contacto, cliente.apellido_contacto, MIN(fecha_pago) AS primer_fecha_pago, MAX(fecha_pago) AS ultima_fecha_pago 
+FROM jardineria.cliente INNER JOIN jardineria.pago ON cliente.codigo_cliente = pago.codigo_cliente GROUP BY pago.codigo_cliente;
 
 # 48. Calcula el número de productos diferentes que hay en cada uno de los pedidos.  
 
-
+SELECT codigo_pedido, COUNT(DISTINCT codigo_producto) AS cantidad_productos FROM jardineria.detalle_pedido GROUP BY codigo_pedido;
 
 # 49. Calcula la suma de la cantidad total de todos los productos que aparecen en cada uno de los pedidos.  
 
-
+SELECT SUM(cantidad) AS suma_total_cantidad_productos FROM jardineria.detalle_pedido;
 
 # 50. Devuelve un listado de los 20 productos más vendidos y el número total de unidades que se han vendido de cada uno. 
 # El listado deberá estar ordenado por el número total de unidades vendidas.  
 
-
+SELECT codigo_producto, SUM(cantidad) AS suma_total_cantidad_productos FROM jardineria.detalle_pedido 
+GROUP BY codigo_producto ORDER BY suma_total_cantidad_productos DESC LIMIT 20;
 
 # 51. La facturación que ha tenido la empresa en toda la historia, indicando la base imponible, el IVA y el total facturado. 
 # La base imponible se calcula sumando el coste del producto por el número de unidades vendidas de la tabla detalle_pedido. 
 # El IVA es el 21 % de la base imponible, y el total la suma de los dos campos anteriores.  
 
-
+SELECT (SUM(base_imponible) + (SUM(base_imponible) * 0.21)) AS facturacion_de_la_empresa FROM 
+(SELECT (SUM(cantidad) * precio_unidad) AS base_imponible FROM jardineria.detalle_pedido GROUP BY codigo_producto) AS base;
 
 # 52. La misma información que en la pregunta anterior, pero agrupada por código de producto.  
 
-
+SELECT codigo_producto, ROUND((base_imponible + (base_imponible * 0.21))) AS facturacion_por_producto FROM 
+(SELECT codigo_producto, (SUM(cantidad) * precio_unidad) AS base_imponible FROM jardineria.detalle_pedido GROUP BY codigo_producto) AS base;
 
 # 53. La misma información que en la pregunta anterior, pero agrupada por código de producto filtrada 
 # por los códigos que empiecen por OR.  
 
-
+SELECT codigo_producto, ROUND((base_imponible + (base_imponible * 0.21))) AS facturacion_por_producto FROM 
+(SELECT codigo_producto, (SUM(cantidad) * precio_unidad) AS base_imponible FROM jardineria.detalle_pedido 
+GROUP BY codigo_producto HAVING codigo_producto LIKE 'OR%') AS base;
 
 # 54. Lista las ventas totales de los productos que hayan facturado más de 3000 euros. Se mostrará el nombre, 
 # unidades vendidas, total facturado y total facturado con impuestos (21% IVA).
 
-
+SELECT producto.nombre, detalle_pedido.cantidad, ROUND(detalle_pedido.cantidad * detalle_pedido.precio_unidad) AS total_facturado, 
+ROUND(((detalle_pedido.cantidad * detalle_pedido.precio_unidad) * 1.21)) AS total_mas_iva FROM jardineria.detalle_pedido INNER JOIN jardineria.producto 
+ON detalle_pedido.codigo_producto = producto.codigo_producto;
 
 # Subconsultas con operadores básicos de comparación 
 # 55. Devuelve el nombre del cliente con mayor límite de crédito.  
